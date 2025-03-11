@@ -1,4 +1,5 @@
 Flask==2.0.0
+Werkzeug==2.0.3 # Last 2.0.x release, compatible with Flask 2.0.0
 pandas==2.0.3
 numpy==1.24.4
 requests==2.31.0

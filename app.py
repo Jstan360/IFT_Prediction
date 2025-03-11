@@ -2,7 +2,7 @@ import numpy as np
 from flask import Flask, request, render_template
 import pickle
 app = Flask(__name__)
-model = pickle.load(open('C:/Users/hp/Desktop/Python files/models/model.pk2', 'rb'))
+model = pickle.load(open('C:/Users/hp/Desktop/Python files/models/model.pk1', 'rb'))
 @app.route('/')
 def home():
     return render_template('index.html')

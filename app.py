@@ -1,8 +1,9 @@
 import numpy as np
 from flask import Flask, request, render_template
+import os
 import pickle
 app = Flask(__name__)
-model = pickle.load(open('C:/github.com/Jstan360/IFT_Prediction/tree/main/models/model.pk1', 'rb'))
+model = os.path.join("models", "model.pk1")
 @app.route('/')
 def home():
     return render_template('index.html')

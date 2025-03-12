@@ -55,7 +55,7 @@ def predict():
         prediction = model.predict(features_array)
         output = round(prediction[0], 2)
 
-        return render_template('index.html', prediction_text=f'The crude oil/brine IFT is {output} mN/m')
+        return render_template('index.html', prediction_text=f'The crude oil/brine IFT is {output} mN/m'.format(output))
 
     except ValueError as ve:
         logging.error(f"Input error: {str(ve)}")

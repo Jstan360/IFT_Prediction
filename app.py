@@ -2,7 +2,7 @@ import numpy as np
 from flask import Flask, request, render_template
 import pickle
 app = Flask(__name__)
-model = pickle.load(open('C:/github.com/Jstan360/IFT_prediction/tree/main/models/model.pk1', 'rb'))
+model = pickle.load(open('C:/github.com/Jstan360/IFT_Prediction/tree/main/models/model.pk1', 'rb'))
 @app.route('/')
 def home():
     return render_template('index.html')

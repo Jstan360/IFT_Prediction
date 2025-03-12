@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 # Load the model at startup
-model_path = os.path.join("models", "model.pk2")
+model_path = os.path.join("models", "model.pk1")
 try:
     with open(model_path, 'rb') as f:
         model = pickle.load(f)

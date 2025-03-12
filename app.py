@@ -2,24 +2,68 @@ import numpy as np
 from flask import Flask, request, render_template
 import os
 import pickle
+import logging
+
+# Set up logging for debugging
+logging.basicConfig(level=logging.DEBUG)
+
 app = Flask(__name__)
-model = os.path.join("models", "model.pk2")
+
+# Load the model at startup
+model_path = os.path.join("models", "model.pk2")
+try:
+    with open(model_path, 'rb') as f:
+        model = pickle.load(f)
+    logging.info("Model loaded successfully: {}".format(type(model)))  # Debug: Check model type
+except FileNotFoundError:
+    logging.error(f"Model file not found at {model_path}")
+    raise
+except Exception as e:
+    logging.error(f"Error loading model: {str(e)}")
+    raise
+
 @app.route('/')
 def home():
     return render_template('index.html')
-@app.route('/predict',methods=['POST'])
+
+@app.route('/predict', methods=['POST'])
 def predict():
-    feature_names = ['Critical Micelle Concentration (CMC) (M)','Hydrophilic - Lipophilic Balance (HLB)','Solubility Ratio (SR)','Molecular Packing Parameter (MPP)','Density (g/mL)','Molecular Weight (g/mol)']
-    model.feature_names = feature_names
-    int_feature_names = [float(x) for x in request.form.values()]
-    feature_names = [np.array(int_feature_names)]
-    prediction = model.predict(feature_names)
-    
-    output = round(prediction[0], 2)
-    
-    return render_template('index.html', prediction_text= 'The crude oil/brine IFT is {} mN/m' .format(output))
+    try:
+        # Define expected feature names (for reference only)
+        feature_names = [
+            'Critical Micelle Concentration (CMC) (M)',
+            'Hydrophilic - Lipophilic Balance (HLB)',
+            'Solubility Ratio (SR)',
+            'Molecular Packing Parameter (MPP)',
+            'Density (g/mL)',
+            'Molecular Weight (g/mol)'
+        ]
 
-if __name__ == '__main__':
-    app.run()
-    
+        # Convert form data to floats
+        input_features = [float(x) for x in request.form.values()]
+        logging.debug(f"Input features: {input_features}")  # Debug: Log inputs
 
+        # Validate input length
+        if len(input_features) != len(feature_names):
+            raise ValueError(f"Expected {len(feature_names)} features, got {len(input_features)}")
+
+        # Convert to 2D NumPy array for prediction
+        features_array = np.array([input_features])
+        logging.debug(f"Features array: {features_array}")  # Debug: Log array
+
+        # Make prediction
+        prediction = model.predict(features_array)
+        output = round(prediction[0], 2)
+
+        return render_template('index.html', prediction_text=f'The crude oil/brine IFT is {output} mN/m')
+
+    except ValueError as ve:
+        logging.error(f"Input error: {str(ve)}")
+        return render_template('index.html', prediction_text=f"Error: {str(ve)}")
+    except Exception as e:
+        logging.error(f"Prediction error: {str(e)}")
+        return render_template('index.html', prediction_text=f"Error: {str(e)}")
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

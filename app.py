@@ -3,7 +3,7 @@ from flask import Flask, request, render_template
 import os
 import pickle
 app = Flask(__name__)
-model = os.path.join("models", "model.pk1")
+model = os.path.join("models", "model.pk2")
 @app.route('/')
 def home():
     return render_template('index.html')
